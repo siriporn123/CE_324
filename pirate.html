@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <title>Pirate</title>
+<style>
+	body{
+		background-color:#FFFFCC;
+		margin:50px
+		font-size: 20px;
+	}
+	
+</style>
+<script src="lib/three.min.js"></script>
+<script src="lib/Coordinates.js"></script>
+<script src="lib/OrbitAndPanControls.js"></script>
+<script src="lib/dat.gui.min.js"></script>
+	
+<script>
+			function loadJS(file) {
+				var js = document.createElement("script");
+					js.type = "application/javascript";
+					js.src = file;
+					document.body.appendChild(js);
+			}
+</script>
+</script>
+</head>
+<body>
+<a>Please choose which assignment : </a>
+<select onchange="loadJS(this.value);">
+	<option value="#">Select</option>
+	<option value="robot_arm_demo.js">Assignment-Robot</option>
+</select>
+<p>
+<div id="container">
+</div>
+</body>
+</html>

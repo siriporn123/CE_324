@@ -13,7 +13,7 @@ var gridY = false;
 var gridZ = false;
 var axes = true;
 var ground = true;
-var arm, forearm;
+var arm, forearm, plummet;
 
 function fillScene() {
 	scene = new THREE.Scene();
@@ -51,6 +51,7 @@ function fillScene() {
 	var robotBaseMaterial = new THREE.MeshPhongMaterial( { color: 0x6E23BB, specular: 0x6E23BB, shininess: 20 } );
 	var robotForearmMaterial = new THREE.MeshPhongMaterial( { color: 0xF4C154, specular: 0xF4C154, shininess: 100 } );
 	var robotUpperArmMaterial = new THREE.MeshPhongMaterial( { color: 0x95E4FB, specular: 0x95E4FB, shininess: 100 } );
+	var robotPolygon = new THREE.MeshPhongMaterial({color: 0xCD5C5C, specular: 0xCD5C5C, shininess: 300});
 
 	var torus = new THREE.Mesh( 
 		new THREE.TorusGeometry( 22, 15, 32, 32 ), robotBaseMaterial );
@@ -66,8 +67,16 @@ function fillScene() {
 	var uaLength = 120;	
 	
 	createRobotCrane( arm, uaLength, robotUpperArmMaterial );
+
+	plummet = new THREE.Object3D();
+	var saLength = 50;
+
+	createRobotEvolve(plummet,saLength,robotPolygon);
 	
 	// Move the forearm itself to the end of the upper arm.
+	plummet.position.y = saLength;
+	forearm.add(plummet);
+
 	forearm.position.y = uaLength;	
 	arm.add( forearm );
 	
@@ -110,6 +119,13 @@ function createRobotCrane( part, length, material )
 	// place sphere at end of arm
 	sphere.position.y = length;
 	part.add( sphere );
+}
+function createRobotEvolve(part,length,material)
+{
+	var Polygon = new THREE.Mesh(new THREE.CylinderGeometry( 5, 5, 20,5),material);
+	Polygon.position.x = 90 * Math.PI/180;
+	Polygon.position.y = length;
+	part.add(Polygon);
 }
 
 function init() {
@@ -163,12 +179,12 @@ function render() {
 	
 	forearm.rotation.y = effectController.fy * Math.PI/180;	// yaw
 	forearm.rotation.z = effectController.fz * Math.PI/180;	// roll
+
+	plummet.rotation.y = effectController.sy * Math.PI/180;
+	plummet.rotation.z = effectController.sz * Math.PI/180;
 	
 	renderer.render(scene, camera);
 }
-
-
-
 function setupGui() {
 
 	effectController = {
@@ -183,9 +199,11 @@ function setupGui() {
 		uz: -15.0,
 
 		fy: 10.0,
-		fz: 60.0
-	};
+		fz: 60.0,
 
+		sy: 10.0,
+		sz: 20.0
+	};
 	var gui = new dat.GUI();
 	var h = gui.addFolder("Grid display");
 	h.add( effectController, "newGridX").name("Show XZ grid");
@@ -198,6 +216,8 @@ function setupGui() {
 	h.add(effectController, "uz", -45.0, 45.0, 0.025).name("Upper arm z");
 	h.add(effectController, "fy", -180.0, 180.0, 0.025).name("Forearm y");
 	h.add(effectController, "fz", -120.0, 120.0, 0.025).name("Forearm z");
+	h.add(effectController, "sy", -50.0, 50.0, 0.025).name("Evolve y");
+	h.add(effectController, "sz", -20.0, 20.0, 0.025).name("Evolve z");
 }
 
 function takeScreenshot() {
